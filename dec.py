@@ -2,6 +2,8 @@ from base64 import b64decode
 from pathlib import Path
 from os import listdir
 
+import orjson
+
 from whisper_save.cipher import decrypt
 from whisper_save import TARGET_DIR
 
@@ -20,9 +22,13 @@ def main():
             ct = b64decode(f.read().strip())
 
         pt = decrypt(ct)
+        json_expand = orjson.dumps(
+            orjson.loads(pt),
+            option=orjson.OPT_INDENT_2,
+        )
 
         with open(output_path, mode="wb") as f:
-            f.write(pt)
+            f.write(json_expand)
 
 
 if __name__ == "__main__":
